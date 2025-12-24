@@ -1,0 +1,346 @@
+/* --------------------------------------------------
+   GLOBAL
+-------------------------------------------------- */
+body {
+  font-family: system-ui, sans-serif;
+  background: #fafafa;
+  margin: 0;
+  padding: 0;
+  color: #222;
+}
+
+h1, h2, h3 {
+  margin: 0 0 10px;
+  font-weight: 600;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* --------------------------------------------------
+   RECIPES CONTAINER + GRID
+-------------------------------------------------- */
+.recipes-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.recipes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* --------------------------------------------------
+   RECIPE CARD
+-------------------------------------------------- */
+.recipe-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: box-shadow 0.2s ease;
+}
+
+.recipe-card:hover {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+}
+
+/* --------------------------------------------------
+   IMAGE
+-------------------------------------------------- */
+.recipe-image {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid #eee;
+}
+
+/* --------------------------------------------------
+   TITLE + SUMMARY
+-------------------------------------------------- */
+.recipe-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+.recipe-summary {
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.4;
+}
+
+/* --------------------------------------------------
+   META INFO
+-------------------------------------------------- */
+.recipe-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #444;
+  margin-top: 5px;
+}
+
+/* --------------------------------------------------
+   TAGS (cuisines, dishTypes, diets)
+-------------------------------------------------- */
+.recipe-tags p {
+  margin: 4px 0;
+  font-size: 0.85rem;
+}
+
+.recipe-tags strong {
+  color: #333;
+}
+
+/* --------------------------------------------------
+   ACTION BUTTONS
+-------------------------------------------------- */
+.card-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.card-actions button,
+.card-actions .heart {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.card-actions button:hover,
+.card-actions .heart:hover {
+  transform: scale(1.2);
+}
+
+/* --------------------------------------------------
+   MODAL OVERLAY + CONTENT
+-------------------------------------------------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5000;
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------
+   DETAIL MODAL IMAGE
+-------------------------------------------------- */
+.detail-image {
+  width: 100%;
+  border-radius: 10px;
+  margin: 15px 0;
+}
+
+/* --------------------------------------------------
+   FORM INPUTS (Add/Edit Modals)
+-------------------------------------------------- */
+.modal-content input,
+.modal-content textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.modal-content button {
+  background: #0078ff;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  margin-top: 10px;
+}
+
+/* --------------------------------------------------
+   SEARCH + SORT CONTROLS
+-------------------------------------------------- */
+.recipes-container input,
+.recipes-container select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+.favorites-link {
+  display: inline-block;
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+  text-decoration: none;
+}
+
+/* --------------------------------------------------
+   ANIMATIONS
+-------------------------------------------------- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.detail-buttons {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.detail-buttons button {
+  background: #0078ff;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.95rem;
+}
+
+.full-summary {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 15px;
+}
+
+.full-summary a {
+  display: block;
+  margin-top: 5px;
+}
+
+.similar-recipes {
+  margin-top: 20px;
+}
+
+.similar-recipes h3 {
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+}
+
+.similar-recipes ul {
+  padding-left: 20px;
+}
+
+.similar-recipes li {
+  margin-bottom: 6px;
+}
+
+.similar-recipes a {
+  color: #0078ff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.similar-recipes a:hover {
+  text-decoration: underline;
+}
+
+.nutrition-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.nutrition-badges span {
+  background: #f1f1f1;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.instruction-step {
+  opacity: 0;
+  transform: translateY(8px);
+  animation: fadeUp 0.4s ease forwards;
+  margin-bottom: 10px;
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.delete-fav-btn {
+  background: #ff4d4d;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  margin-top: 10px;
+}
+
+.navbar-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.nav-search {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  flex: 1;
+  min-width: 200px;
+}
+
+.nav-sort,
+.nav-categories select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.nav-categories {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.clear-cat {
+  background: #ff4d4d;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+}

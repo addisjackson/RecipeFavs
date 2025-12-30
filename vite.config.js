@@ -12,6 +12,12 @@ export default defineConfig({
     protocol: "ws",
     host: "localhost",
     port: 5173
+  },
+  build: { 
+    outDir: "dist", 
+    sourcemap: false, 
+    minify: "esbuild", 
+    cssMinify: true, 
   }
 }
 

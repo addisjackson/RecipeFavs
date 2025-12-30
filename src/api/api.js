@@ -1,4 +1,5 @@
 const API_BASE = "https://recipe-backend-rux1.onrender.com";
+
 // ─────────────────────────────
 // RECIPES
 // ─────────────────────────────
@@ -14,25 +15,29 @@ export async function getRecipe(id) {
 }
 
 export async function createRecipe(recipe) {
-  return fetch(`${API_BASE}/recipes`, {
+  const res = await fetch(`${API_BASE}/recipes`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(recipe)
   });
+  return res.json();
 }
 
-export async function updateRecipe(id, recipe) {
-  return fetch(`${API_BASE}/recipes/${id}`, {
+// FIXED: updateRecipe takes ONE argument (the recipe object)
+export async function updateRecipe(recipe) {
+  const res = await fetch(`${API_BASE}/recipes/${recipe.id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(recipe)
   });
+  return res.json();
 }
 
 export async function deleteRecipe(id) {
-  return fetch(`${API_BASE}/recipes/${id}`, {
+  const res = await fetch(`${API_BASE}/recipes/${id}`, {
     method: "DELETE"
   });
+  return res.json();
 }
 
 // ─────────────────────────────
@@ -44,32 +49,29 @@ export async function getFavorites() {
   return res.json();
 }
 
-
-
 export async function toggleFavorite(id) {
   const res = await fetch(`${API_BASE}/favorites/toggle`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id })
   });
-
   return res.json();
 }
 
-
-
 export async function deleteFavorite(id) {
-  return fetch(`${API_BASE}/favorites/${id}`, {
+  const res = await fetch(`${API_BASE}/favorites/${id}`, {
     method: "DELETE"
   });
+  return res.json();
 }
 
-export async function updateFavorite(id, recipe) {
-  return fetch(`${API_BASE}/favorites/${id}`, {
+export async function updateFavorite(recipe) {
+  const res = await fetch(`${API_BASE}/favorites/${recipe.id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(recipe)
   });
+  return res.json();
 }
 
 export async function deleteFavoriteEverywhere(id) {

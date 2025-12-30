@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "homepage": "https://addisjackson.github.io/RecipeFavs",
+  
   "scripts": {
     "dev": "vite",
     "dist": "vite build",

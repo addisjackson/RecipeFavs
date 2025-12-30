@@ -1,28 +1,18 @@
-import React from 'react';
+import React, { useState } from "react";
 
-export default function RecipeImage({ imageUrl }) {
-  if (!imageUrl) {
-    return (
-      <img
-        className="recipe-image"
-        src="/assets/images/placeholder.jpg"
-        alt="No image"
-      />
-    );
+export default function RecipeImage({ image, title }) {
+  const [src, setSrc] = useState(image);
+
+  function handleError() {
+    setSrc("/assets/images/placeholder.jpg");
   }
-
-  const fileName = imageUrl.split("/").pop();
-  const localPath = `/assets/images/${fileName}`;
 
   return (
     <img
       className="recipe-image"
-      src={imageUrl}
-      onError={(e) => {
-        e.target.onerror = null;
-        e.target.src = localPath;
-      }}
-      alt="Recipe"
+      src={src}
+      alt={title}
+      onError={handleError}
     />
   );
 }

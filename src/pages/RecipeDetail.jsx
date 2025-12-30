@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getRecipe, getFavorites, toggleFavorite } from "../api/api";
 import { useParams } from "react-router-dom";
+import RecipeImage from "../components/RecipeImage";
 
 export default function RecipeDetail() {
   const { title } = useParams();
@@ -35,7 +36,8 @@ export default function RecipeDetail() {
         {fav ? "❤️" : "🤍"}
       </span>
 
-      <img className="detail-image"  src={recipe.image_url} alt={recipe.title} />
+      {/* ⭐ IMAGE WITH PROXY + FALLBACK */}
+      <RecipeImage imageUrl={recipe.image} />
 
       <h2>Ingredients</h2>
       <ul>

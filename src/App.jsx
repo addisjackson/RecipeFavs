@@ -1,24 +1,36 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, Link, useLocation } from "react-router-dom";
+import { Routes, Route, Link, useLocation, useNavigate } from "react-router-dom";
 import "./App.css";
 
 import NavbarControls from "./components/NavbarControls";
 import RecipesList from "./pages/RecipesList";
 import FavoritesList from "./pages/FavoritesList";
-import AddRecipeModal from "./components/AddRecipeModal";
 
-import { getRecipes, getFavorites } from "./api/api";
+import AddRecipeModal from "./components/AddRecipeModal";
+import EditRecipeModal from "./components/EditRecipeModal";
+
+import {
+  getRecipes,
+  getFavorites,
+  createRecipe,
+  updateRecipe,
+  deleteRecipe
+} from "./api/api";
+
+import { CUISINES, DIETS, DISH_TYPES } from "./components/RecipeOptions";
+import { useToast } from "./components/ToastContext";
 
 export default function App() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { showToast } = useToast();
 
   // GLOBAL DATA
   const [recipes, setRecipes] = useState([]);
   const [favorites, setFavorites] = useState([]);
 
-  // GLOBAL FILTER/SORT STATE
+  // FILTERS + SORT
   const [filter, setFilter] = useState("");
-
   const [sort, setSort] = useState("none");
   const [sortDir, setSortDir] = useState("asc");
 
@@ -26,8 +38,10 @@ export default function App() {
   const [cuisine, setCuisine] = useState("");
   const [diet, setDiet] = useState("");
 
-  // ADD RECIPE MODAL
+  // MODALS
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingRecipe, setEditingRecipe] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   // LOAD DATA
   useEffect(() => {
@@ -40,7 +54,33 @@ export default function App() {
     load();
   }, []);
 
-  // PAGE-SPECIFIC CATEGORY OPTIONS
+  // EDIT HANDLER
+  function handleEdit(recipe) {
+    setEditingRecipe(recipe);
+    setShowEditModal(true);
+  }
+
+  // DELETE HANDLER
+  async function handleDelete(id) {
+    if (!window.confirm("Delete this recipe?")) return;
+
+    const prevRecipes = recipes;
+    const prevFavorites = favorites;
+
+    setRecipes(prev => prev.filter(r => r.id !== id));
+    setFavorites(prev => prev.filter(f => f.id !== id));
+
+    try {
+      await deleteRecipe(id);
+      showToast("Recipe deleted", "success");
+    } catch (err) {
+      setRecipes(prevRecipes);
+      setFavorites(prevFavorites);
+      showToast("Error deleting recipe", "error");
+    }
+  }
+
+  // ACTIVE DATA FOR FILTER OPTIONS
   const activeData =
     location.pathname === "/favorites" ? favorites : recipes;
 
@@ -52,7 +92,8 @@ export default function App() {
     sort !== "none" ||
     dishType !== "" ||
     cuisine !== "" ||
-    diet !== "";
+    diet !== "" ||
+    filter.trim() !== "";
 
   function clearAllFilters() {
     setSort("none");
@@ -60,48 +101,89 @@ export default function App() {
     setDishType("");
     setCuisine("");
     setDiet("");
+    setFilter("");
   }
 
   return (
     <div className="app-container">
 
       {/* HEADER */}
-      <div className="header">
+      <div className="page-title">
         <h1>Welcome Eaters: Enjoy all things here are pasteurized</h1>
 
-        <div className="header-actions">
+        <nav className="header-actions">
 
-          {/* Go to Favorites */}
-          <Link to="/favorites" className="favorites-link">
-            <span className="heart-icon">❤️</span>
-            <span className="favorites-label">Go to Favorites</span>
-          </Link>
+          <span className="nav-link" onClick={() => navigate("/recipes")}>
+            <span className="home-icon">🏠</span> Home
+          </span>
 
-          {/* Add Recipe */}
-          <button
-            className="add-recipe-btn"
+          <span className="nav-link" onClick={() => navigate("/favorites")}>
+            <span className="heart-icon">❤️</span> Favorites
+          </span>
+
+          <span
+            className="nav-link add-recipe-btn"
             onClick={() => setShowAddModal(true)}
           >
-            <span className="add-icon">➕</span>
-            <span>Add Recipe</span>
-          </button>
+            <span className="plus-icon">+</span> Add A Recipe
+          </span>
 
-        </div>
+        </nav>
       </div>
 
       {/* ADD RECIPE MODAL */}
       {showAddModal && (
         <AddRecipeModal
           onClose={() => setShowAddModal(false)}
-          onSave={async () => {
+          onSave={async (newRecipe) => {
+            const tempId = Date.now();
+            const optimistic = { ...newRecipe, id: tempId };
+
+            setRecipes(prev => [...prev, optimistic]);
             setShowAddModal(false);
-            const updated = await getRecipes();
-            setRecipes(updated);
+
+            try {
+              const saved = await createRecipe(newRecipe);
+              setRecipes(prev =>
+                prev.map(r => (r.id === tempId ? saved : r))
+              );
+              showToast("Recipe added!", "success");
+            } catch (err) {
+              setRecipes(prev => prev.filter(r => r.id !== tempId));
+              showToast("Error adding recipe", "error");
+            }
           }}
         />
       )}
 
-      {/* GLOBAL NAVBAR CONTROLS */}
+      {/* EDIT RECIPE MODAL */}
+      {showEditModal && editingRecipe && (
+        <EditRecipeModal
+          recipe={editingRecipe}
+          onClose={() => {
+            setShowEditModal(false);
+            setEditingRecipe(null);
+          }}
+          onSave={async (updatedRecipe) => {
+            setRecipes(prev =>
+              prev.map(r => (r.id === updatedRecipe.id ? updatedRecipe : r))
+            );
+
+            const saved = await updateRecipe(updatedRecipe);
+
+            setRecipes(prev =>
+              prev.map(r => (r.id === saved.id ? saved : r))
+            );
+
+            showToast("Recipe updated!", "success");
+
+            setShowEditModal(false);
+            setEditingRecipe(null);
+          }}
+        />
+      )}
+
+      {/* NAVBAR CONTROLS */}
       <NavbarControls
         filter={filter}
         setFilter={setFilter}
@@ -117,25 +199,28 @@ export default function App() {
         setDiet={setDiet}
         hasActiveFilters={hasActiveFilters}
         clearAllFilters={clearAllFilters}
-        cuisines={cuisines}
-        dishTypes={dishTypes}
-        diets={diets}
+        cuisines={CUISINES}
+        dishTypes={DISH_TYPES}
+        diets={DIETS}
       />
 
       {/* ROUTES */}
       <Routes>
         <Route
-          path="/"
+          path="/recipes"
           element={
             <RecipesList
               recipes={recipes}
               favorites={favorites}
+              setFavorites={setFavorites}
               filter={filter}
               sort={sort}
               sortDir={sortDir}
               dishType={dishType}
               cuisine={cuisine}
               diet={diet}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
             />
           }
         />
@@ -151,10 +236,36 @@ export default function App() {
               dishType={dishType}
               cuisine={cuisine}
               diet={diet}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          }
+        />
+
+        <Route
+          path="/"
+          element={
+            <RecipesList
+              recipes={recipes}
+              favorites={favorites}
+              setFavorites={setFavorites}
+              filter={filter}
+              sort={sort}
+              sortDir={sortDir}
+              dishType={dishType}
+              cuisine={cuisine}
+              diet={diet}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
             />
           }
         />
       </Routes>
+
+      {/* FOOTER */}
+      <div className="footer">
+        <p>&copy; 2024 Recipe Favorites. All rights reserved.</p>
+      </div>
     </div>
   );
 }

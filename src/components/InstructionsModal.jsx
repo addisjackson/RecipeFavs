@@ -1,22 +1,42 @@
 import React from "react";
-import Modal from "../components/Modal";
 
 export default function InstructionsModal({ instructions, onClose }) {
+  // Normalize instructions into safe strings
+  const safeSteps = (instructions || [])
+    .filter(Boolean) // remove null / undefined
+    .map(item => {
+      if (typeof item === "string") return item.trim();
+
+      if (typeof item === "object") {
+        if (item.step) return item.step.trim();
+        if (item.description) return item.description.trim();
+      }
+
+      return "";
+    })
+    .filter(Boolean);
+
+  // Fun icons for steps
+  const icons = ["🥚", "🍅", "🧈", "🥕", "🧄", "🌶️", "🍋", "🥬", "🍽️"];
+
   return (
-    <Modal onClose={onClose}>
+    <div className="instructions-modal fade-in">
       <h2>Instructions</h2>
 
-      <div className="instructions-list">
-        {instructions.map((s, idx) => (
-          <div
-            key={s.number}
-            className="instruction-step"
-            style={{ animationDelay: `${idx * 0.15}s` }}
-          >
-            <strong>Step {s.number}:</strong> {s.step}
-          </div>
+      <ol className="instructions-list">
+        {safeSteps.map((text, idx) => (
+          <li key={idx} className="instruction-item slide-up">
+            <span className="instruction-icon">
+              {icons[idx % icons.length]}
+            </span>
+            <span className="instruction-text">{text}</span>
+          </li>
         ))}
-      </div>
-    </Modal>
+      </ol>
+
+      <button className="close-btn" onClick={onClose}>
+        Close
+      </button>
+    </div>
   );
 }

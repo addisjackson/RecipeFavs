@@ -3,6 +3,7 @@ import Modal from "../components/Modal";
 import IngredientsModal from "../components/IngredientsModal";
 import InstructionsModal from "../components/InstructionsModal";
 import EditFavoriteModal from "../components/EditFavoriteModal";
+import RecipeImage from "../components/RecipeImage";
 import { toggleFavorite } from "../api/api";
 
 /* Extract similar recipes */
@@ -28,7 +29,7 @@ function extractSimilarRecipes(summaryHtml) {
   return results;
 }
 
-export default function FavoriteDetail({ recipe, onClose, onUpdate }) {
+export default function FavoriteDetail({ recipe, onClose, onUpdate, onDeleteFavoriteEverywhere }) {
   const [showIngredients, setShowIngredients] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -57,10 +58,11 @@ export default function FavoriteDetail({ recipe, onClose, onUpdate }) {
 
         <div className="detail-actions">
           <button onClick={() => setShowEdit(true)}>✏️ Edit</button>
-          <button onClick={handleUnfavorite}>🗑️ Remove</button>
+          <button onClick={onDeleteFavoriteEverywhere}>🗑️ Remove</button>
         </div>
 
-        <img className="detail-image" src={recipe.image} alt={recipe.title} />
+        {/* ⭐ IMAGE WITH PROXY + FALLBACK */}
+        <RecipeImage imageUrl={recipe.image} />
 
         <div
           className="full-summary"

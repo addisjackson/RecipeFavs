@@ -72,3 +72,12 @@ export async function updateFavorite(id, recipe) {
     body: JSON.stringify(recipe)
   });
 }
+
+export async function deleteFavoriteEverywhere(id) {
+  const res = await fetch(`${API}/favorites/delete/${id}`, {
+    method: "DELETE"
+  });
+
+  if (!res.ok) throw new Error("Failed to delete favorite everywhere");
+  return res.json();
+}

@@ -303,7 +303,7 @@ img.detail-image {
   animation: fadeIn 0.25s ease forwards;
 }
 
-/modal-overlay.nested {
+modal-overlay.nested {
   z-index: 7000;
 }
 /* MODAL CONTENT */
